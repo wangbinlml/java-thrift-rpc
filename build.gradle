@@ -1,0 +1,35 @@
+ apply plugin: 'java'
+ apply plugin: 'eclipse'
+ repositories { 
+	 mavenCentral() 
+ } 
+    dependencies {
+          compile  fileTree(dir: 'lib', include: '*.jar')
+	      testCompile 'junit:junit:4.8.2'
+    }
+ version = '1.0'
+  jar {
+        manifest.attributes 'Main-Class' : 'com.cmcc.andbaby.main.Main'
+        manifest.attributes 'Class-Path' : '. ./lib/libthrift-0.9.3.jar ./lib/slf4j-api-1.6.4.jar ./lib/slf4j-log4j12-1.6.4.jar ./lib/log4j-1.2.17.jar'
+  }
+
+
+//依赖编译，然后打包JAR  
+task taskJar(type:Jar, dependsOn: compileJava) {  
+    from 'build/classes'  
+    destinationDir = file('build/libs')  
+}  
+  
+//清除上次的编译过的文件  
+task clearPj(type:Delete){  
+   delete 'build','target'  
+}  
+  
+  
+//把JAR复制到目标目录  
+task release(type: Copy,dependsOn: [clearPj,taskJar]) {  
+    from('build/libs') {  
+        include '*.*'  
+    }  
+    into ('target')  
+}  
