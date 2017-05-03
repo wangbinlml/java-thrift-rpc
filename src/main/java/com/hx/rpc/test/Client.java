@@ -1,79 +1,86 @@
 package com.hx.rpc.test;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
+import org.apache.thrift.TException;
+import org.apache.thrift.async.TAsyncClientManager;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.protocol.TProtocolFactory;
+import org.apache.thrift.transport.TNonblockingSocket;
+import org.apache.thrift.transport.TNonblockingTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.apache.thrift.transport.TTransportException;
 
-import com.hx.rpc.thrift.ThriftServiceClientProxyFactory;
+import com.hx.rpc.gen.Header;
+import com.hx.rpc.gen.Msg;
+import com.hx.rpc.gen.RPCInvokeService;
+import com.hx.rpc.gen.impl.MethodCallback;
 
-import cn.slimsmart.thrift.rpc.demo.EchoSerivce;
-
-
-//客户端调用
-@SuppressWarnings("resource")
 public class Client {
+	public void startClient() {
+        TTransport transport;
+        try {
+            transport = new TSocket("localhost", 1234);
+            TProtocol protocol = new TBinaryProtocol(transport);
+            RPCInvokeService.Client client = new RPCInvokeService.Client(protocol);
+            transport.open();
+            Msg msg = new Msg();
+            Header header = new Header();
+            header.setTid("1212121212");
+            header.setProtocol("thrift");
+            header.setMsgType(0);
+            msg.setHeader(header);
+            msg.setBody("hello");
+            System.out.println("Client calls ....."); 
+            Msg msg2 = client.invoke("abc", "abc", msg);
+            System.out.println(msg2.getBody());
+            transport.close();
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+	public void startSyncClient() {
+        try {
+        	TAsyncClientManager clientManager = new TAsyncClientManager();
+            TNonblockingTransport transport = new TNonblockingSocket( 
+                    "localhost", 10005); 
+
+            TProtocolFactory protocol = new TBinaryProtocol.Factory(); 
+            RPCInvokeService.AsyncClient asyncClient = new RPCInvokeService.AsyncClient(protocol,clientManager,transport);
+            System.out.println("Client calls ....."); 
+    		CountDownLatch latch = new CountDownLatch(1);
+            MethodCallback callBack = new MethodCallback(latch); 
+            
+            Msg msg = new Msg();
+            Header header = new Header();
+            header.setTid("1212121212");
+            header.setProtocol("thrift");
+            header.setMsgType(0);
+            msg.setHeader(header);
+            msg.setBody("hello2");
+            asyncClient.invoke("abc", "abc", msg, callBack);
+            Object res = callBack.getResult(); 
+            while (res == null) { 
+                res = callBack.getResult(); 
+            } 
+            System.out.println(res); 
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
 	public static void main(String[] args) {
-		//simple();
-		spring();
+		Client client = new Client();
+        client.startClient();
+        client.startSyncClient();
 	}
 
-	public static void spring() {
-		try {
-			final ApplicationContext context = new ClassPathXmlApplicationContext("spring-context-thrift-client.xml");
-			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
-			System.out.println(echoSerivce.echo("hello--echo"));
-			//关闭连接的钩子
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                	Map<String,ThriftServiceClientProxyFactory>
-                	clientMap = context.getBeansOfType(ThriftServiceClientProxyFactory.class);
-                	for(Entry<String, ThriftServiceClientProxyFactory> client : clientMap.entrySet()){
-                		System.out.println("serviceName : "+client.getKey() + ",class obj: "+client.getValue());
-                		client.getValue().close();
-                	}
-                }
-            });
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	static class TThread extends Thread {
-		EchoSerivce.Iface echoSerivce;
-		TThread(EchoSerivce.Iface service) {
-			echoSerivce = service;
-		}
-		public void run() {
-			try {
-				for (int i = 0; i < 10; i++) {
-					Thread.sleep(1000*i);
-					System.out.println(Thread.currentThread().getName()+"  "+echoSerivce.echo("hello"));
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public static void simple() {
-		try {
-			TSocket socket = new TSocket("127.0.0.1", 9001);
-			TTransport transport = new TFramedTransport(socket);
-			TProtocol protocol = new TBinaryProtocol(transport);
-			EchoSerivce.Client client = new EchoSerivce.Client(protocol);
-			transport.open();
-			System.out.println(client.echo("helloword"));
-			Thread.sleep(3000);
-			transport.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

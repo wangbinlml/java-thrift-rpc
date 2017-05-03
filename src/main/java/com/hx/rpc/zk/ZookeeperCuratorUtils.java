@@ -3,6 +3,8 @@ package com.hx.rpc.zk;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -14,6 +16,13 @@ import org.apache.curator.framework.api.CuratorListener;
 import org.apache.curator.framework.api.transaction.CuratorTransaction;
 import org.apache.curator.framework.api.transaction.CuratorTransactionFinal;
 import org.apache.curator.framework.api.transaction.CuratorTransactionResult;
+import org.apache.curator.framework.recipes.cache.ChildData;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
+import org.apache.curator.framework.recipes.cache.TreeCache;
+import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
+import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.retry.RetryNTimes;
 import org.apache.zookeeper.CreateMode;
@@ -32,6 +41,8 @@ import org.apache.zookeeper.data.Id;
  */
 public class ZookeeperCuratorUtils {
 
+	private static PathChildrenCache cachedPath;
+
 	/**
 	 * 先测试玩玩
 	 * 
@@ -44,9 +55,9 @@ public class ZookeeperCuratorUtils {
 	 */
 	public static void main(String[] args) throws Exception {
 		// nodesList(clientOne(), "/");
-		CuratorFramework client = clientTwo();
-		List<String> list = watchedGetChildren(client, "/zookeeper");
-		System.out.println(list);
+		CuratorFramework client = clientOne();
+		System.out.println("start.....");
+		setListenterThreeThree(client,"/zookeeper");
 	}
 
 	/**
@@ -56,7 +67,7 @@ public class ZookeeperCuratorUtils {
 	 * @exception @createTime：2016年5月17日
 	 * @author: songqinghu
 	 */
-	private static CuratorFramework clientOne() {
+	public static CuratorFramework clientOne() {
 		// zk 地址
 		String connectString = "127.0.0.1:2181";
 		// 连接时间 和重试次数
@@ -174,6 +185,42 @@ public class ZookeeperCuratorUtils {
 		 * Get children and set the given watcher on the node.
 		 */
 		return client.getChildren().usingWatcher(watcher).forPath(path);
+	}
+
+	// 3.Tree Cache
+	// 监控 指定节点和节点下的所有的节点的变化--无限监听 可以进行本节点的删除(不在创建)
+	private static void setListenterThreeThree(CuratorFramework client,String path) throws Exception {
+		ExecutorService pool = Executors.newCachedThreadPool();
+		// 设置节点的cache
+		TreeCache treeCache = new TreeCache(client, path);
+		// 设置监听器和处理过程
+		treeCache.getListenable().addListener(new TreeCacheListener() {
+			@Override
+			public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
+				ChildData data = event.getData();
+				if (data != null) {
+					switch (event.getType()) {
+					case NODE_ADDED:
+						System.out.println("NODE_ADDED : " + data.getPath() + "  数据:" + new String(data.getData()));
+						break;
+					case NODE_REMOVED:
+						System.out.println("NODE_REMOVED : " + data.getPath() + "  数据:" + new String(data.getData()));
+						break;
+					case NODE_UPDATED:
+						System.out.println("NODE_UPDATED : " + data.getPath() + "  数据:" + new String(data.getData()));
+						break;
+
+					default:
+						break;
+					}
+				} else {
+					System.out.println("data is null : " + event.getType());
+				}
+			}
+		});
+		// 开始监听
+		treeCache.start();
+
 	}
 
 	public static Collection<CuratorTransactionResult> transaction(CuratorFramework client) throws Exception {

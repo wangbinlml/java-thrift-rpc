@@ -1,16 +1,37 @@
 package com.hx.rpc.test;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TBinaryProtocol.Factory;
+import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.server.TThreadPoolServer.Args;
+import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TTransportException;
 
-//服务端启动
+import com.hx.rpc.gen.impl.RPCInvokeServiceImpl;
+import com.hx.rpc.gen.RPCInvokeService;
+
 public class Server {
 
 	public static void main(String[] args) {
 		try {
-			new ClassPathXmlApplicationContext("classpath:spring-context-thrift-server.xml");
-			System.out.println("server start");
-		} catch (Exception e) {
+
+			TServerSocket serverTransport = new TServerSocket(1234);
+
+			RPCInvokeService.Processor processor = new RPCInvokeService.Processor(new RPCInvokeServiceImpl());
+
+			Factory portFactory = new TBinaryProtocol.Factory(true, true);
+
+			Args args2 = new Args(serverTransport);
+			args2.processor(processor);
+			args2.protocolFactory(portFactory);
+
+			System.out.println("start............");
+			TServer server = new TThreadPoolServer(args2);
+			server.serve();
+		} catch (TTransportException e) {
 			e.printStackTrace();
 		}
 	}
+
 }
