@@ -2,11 +2,13 @@ package com.hx.rpc.gen.impl;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.log4j.Logger;
 import org.apache.thrift.async.AsyncMethodCallback;
 
 import com.hx.rpc.gen.RPCInvokeService.AsyncClient.invoke_call;
 
 public class MethodCallback implements AsyncMethodCallback<invoke_call> {
+	private Logger logger = Logger.getLogger(MethodCallback.class.getName());
 	private CountDownLatch latch;  
 	Object res = null; 
     public MethodCallback(CountDownLatch latch) {  
@@ -19,10 +21,10 @@ public class MethodCallback implements AsyncMethodCallback<invoke_call> {
 
     @Override  
     public void onComplete(invoke_call response) {  
-        System.out.println("onComplete");  
+    	logger.debug("onComplete");  
         try {  
         	this.res = response.getResult(); 
-            System.out.println("AsynCall result :" + response.getResult().toString());  
+        	logger.debug("AsynCall result :" + response.getResult().toString());  
         } catch (Exception e) {  
             e.printStackTrace();  
         } finally {  
@@ -30,8 +32,8 @@ public class MethodCallback implements AsyncMethodCallback<invoke_call> {
         }  
     }  
     @Override  
-    public void onError(Exception exception) {  
-        System.out.println("onError :" + exception.getMessage());  
-        latch.countDown();  
+    public void onError(Exception e) {  
+    	latch.countDown();  
+    	e.printStackTrace();
     }
 }

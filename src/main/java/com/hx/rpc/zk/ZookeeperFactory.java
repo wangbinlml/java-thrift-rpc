@@ -2,15 +2,16 @@ package com.hx.rpc.zk;
 
 import org.apache.curator.framework.CuratorFramework;  
 import org.apache.curator.framework.CuratorFrameworkFactory;  
-import org.apache.curator.retry.ExponentialBackoffRetry;  
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.FactoryBean;  
-import org.springframework.util.StringUtils;  
-  
+import org.springframework.util.StringUtils;
+
 /** 
  * 获取zookeeper客户端链接 
  */  
 public class ZookeeperFactory implements FactoryBean<CuratorFramework> {  
-  
+	private static Logger logger = Logger.getLogger(ZookeeperFactory.class);
     private String zkHosts;  
     // session超时  
     private int sessionTimeout = 30000;  
@@ -54,6 +55,7 @@ public class ZookeeperFactory implements FactoryBean<CuratorFramework> {
     public CuratorFramework getObject() throws Exception {  
         if (singleton) {  
             if (zkClient == null) {  
+            	logger.info("zkClient start");
                 zkClient = create();  
                 zkClient.start();  
             }  
@@ -90,6 +92,7 @@ public class ZookeeperFactory implements FactoryBean<CuratorFramework> {
   
     public void close() {  
         if (zkClient != null) {  
+        	logger.info("zkClient close");
             zkClient.close();  
         }  
     }  
