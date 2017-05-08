@@ -1,10 +1,9 @@
 package com.hx.rpc.core;
 
 import com.alibaba.fastjson.JSONObject;
-import com.hx.rpc.core.impl.RpcClientImpl;
-import com.hx.rpc.core.impl.RpcServerImpl;
+import com.hx.rpc.core.impl.ApplicationImpl;
 
 public interface IApplication {
-	public void init(JSONObject opt);
+	public ApplicationImpl init(JSONObject opt);
 	public void start();
 }
