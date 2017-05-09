@@ -25,7 +25,6 @@ public class RpcClientImpl implements IRpcClient {
 	public void start() {
 		final ApplicationContext context = new ClassPathXmlApplicationContext("spring-context-thrift-client.xml");
 		serivce = (RPCInvokeService.Iface) context.getBean("echoSerivce");
-		asycSerivce = (RPCInvokeService.AsyncIface) context.getBean("echoSerivce");
 		System.out.println("RpcClientImpl start.....");
 	}
 
@@ -46,16 +45,6 @@ public class RpcClientImpl implements IRpcClient {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	@Override
-	public void invoke(String service, String method, Msg msg, AsyncMethodCallback callback) {
-		try {
-			asycSerivce.invoke(service, method, msg, callback);
-		} catch (TException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }
