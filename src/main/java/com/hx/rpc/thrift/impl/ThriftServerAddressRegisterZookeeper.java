@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift;
+package com.hx.rpc.thrift.impl;
 
 import java.io.UnsupportedEncodingException;
 
@@ -7,6 +7,8 @@ import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.springframework.util.StringUtils;
+
+import com.hx.rpc.thrift.ThriftServerAddressRegister;
 
 /**
  * 注册服务列表到Zookeeper

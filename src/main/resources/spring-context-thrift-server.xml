@@ -14,13 +14,13 @@
         <property name="singleton" value="true" />  
     </bean>  
     <bean id="sericeAddressRegister"  
-        class="com.hx.rpc.thrift.ThriftServerAddressRegisterZookeeper"  
+        class="com.hx.rpc.thrift.impl.ThriftServerAddressRegisterZookeeper"  
         destroy-method="close">  
         <property name="zkClient" ref="thriftZookeeper" />  
     </bean>  
     <bean id="echoSerivceImpl" class="com.hx.rpc.gen.impl.RPCInvokeServiceImpl" />  
   
-    <bean id="echoSerivce" class="com.hx.rpc.thrift.ThriftServiceServerFactory"  
+    <bean id="echoSerivce" class="com.hx.rpc.thrift.impl.ThriftServiceServerFactory"  
         destroy-method="close">  
         <property name="service" ref="echoSerivceImpl" />  
         <property name="port" value="9000" />  
@@ -29,7 +29,7 @@
         <property name="thriftServerAddressRegister" ref="sericeAddressRegister" />  
     </bean>  
       
-    <bean id="echoSerivce1" class="com.hx.rpc.thrift.ThriftServiceServerFactory"  
+    <bean id="echoSerivce1" class="com.hx.rpc.thrift.impl.ThriftServiceServerFactory"  
         destroy-method="close">  
         <property name="service" ref="echoSerivceImpl" />  
         <property name="port" value="9001" />  
@@ -38,7 +38,7 @@
         <property name="thriftServerAddressRegister" ref="sericeAddressRegister" />  
     </bean>  
       
-    <bean id="echoSerivce2" class="com.hx.rpc.thrift.ThriftServiceServerFactory"  
+    <bean id="echoSerivce2" class="com.hx.rpc.thrift.impl.ThriftServiceServerFactory"  
         destroy-method="close">  
         <property name="service" ref="echoSerivceImpl" />  
         <property name="port" value="9002" />  

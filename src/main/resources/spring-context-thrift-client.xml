@@ -12,11 +12,11 @@
         destroy-method="close"> 
         <property name="singleton" value="true" />  
     </bean>  
-    <bean id="echoSerivce" class="com.hx.rpc.thrift.ThriftServiceClientProxyFactory" destroy-method="close">  
+    <bean id="echoSerivce" class="com.hx.rpc.thrift.impl.ThriftServiceClientProxyFactory" destroy-method="close">  
         <property name="maxActive" value="5" />  
         <property name="idleTime" value="1800000" />  
         <property name="serverAddressProvider">  
-            <bean class="com.hx.rpc.thrift.ThriftServerAddressProviderZookeeper">  
+            <bean class="com.hx.rpc.thrift.impl.ThriftServerAddressProviderZookeeper">  
                 <property name="service" value="com.hx.rpc.gen.RPCInvokeService" />  
                 <property name="version" value="1.0.0" />  
                 <property name="zkClient" ref="thriftZookeeper" />  

@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift;
+package com.hx.rpc.thrift.impl;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -18,6 +18,8 @@ import org.apache.log4j.Logger;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.springframework.beans.factory.InitializingBean;
+
+import com.hx.rpc.thrift.ThriftServerAddressProvider;
 
 /**
  * 使用zookeeper作为"config"中心,使用apache-curator方法库来简化zookeeper开发

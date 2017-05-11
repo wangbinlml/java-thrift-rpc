@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift;
+package com.hx.rpc.thrift.impl;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.reflect.Constructor;
@@ -13,6 +13,9 @@ import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TNonblockingServerSocket;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
+
+import com.hx.rpc.thrift.ThriftServerAddressRegister;
+import com.hx.rpc.thrift.ThriftServerIpResolve;
 
 /**
  * 服务端注册服务工厂

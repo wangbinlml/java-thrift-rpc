@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift;
+package com.hx.rpc.thrift.impl;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -7,6 +7,8 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 import org.apache.log4j.Logger;
+
+import com.hx.rpc.thrift.ThriftServerIpResolve;
 
 /**
  * 解析网卡Ip

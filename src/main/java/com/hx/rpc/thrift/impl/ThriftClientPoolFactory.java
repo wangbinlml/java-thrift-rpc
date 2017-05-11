@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift;
+package com.hx.rpc.thrift.impl;
 
 import java.net.InetSocketAddress;
 
@@ -10,6 +10,8 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
+
+import com.hx.rpc.thrift.ThriftServerAddressProvider;
 
 /**
  * 连接池,thrift-client for spring

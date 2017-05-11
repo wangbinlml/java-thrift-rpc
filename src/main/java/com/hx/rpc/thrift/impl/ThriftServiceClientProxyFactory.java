@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift;
+package com.hx.rpc.thrift.impl;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -11,7 +11,8 @@ import org.apache.thrift.TServiceClientFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.hx.rpc.thrift.ThriftClientPoolFactory.PoolOperationCallBack;
+import com.hx.rpc.thrift.ThriftServerAddressProvider;
+import com.hx.rpc.thrift.impl.ThriftClientPoolFactory.PoolOperationCallBack;
 
 /**
  * 客户端代理
