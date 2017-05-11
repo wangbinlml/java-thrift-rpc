@@ -10,12 +10,7 @@
   
     <!-- zookeeper -->  
     <bean id="thriftZookeeper" class="com.hx.rpc.zk.ZookeeperFactory"  
-        destroy-method="close">  
-        <property name="zkHosts"  
-            value="127.0.0.1:2181" />  
-        <property name="namespace" value="com.hx.rpc.gen.impl" />  
-        <property name="connectionTimeout" value="3000" />  
-        <property name="sessionTimeout" value="3000" />  
+        destroy-method="close">
         <property name="singleton" value="true" />  
     </bean>  
     <bean id="sericeAddressRegister"  
