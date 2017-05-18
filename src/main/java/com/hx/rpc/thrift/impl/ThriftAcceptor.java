@@ -38,6 +38,10 @@ public class ThriftAcceptor implements IThriftAcceptor{
 
 	@Override
 	public void init(JSONObject opt) {
+		//只作为客户端时acceptor是null
+		if(acceptor == null){
+			return;
+		}
 		this.setHost(acceptor.getString("host"));
 		this.setPort(acceptor.getInteger("port"));
 		this.setName(acceptor.getString("name"));
@@ -52,6 +56,10 @@ public class ThriftAcceptor implements IThriftAcceptor{
 
 	@Override
 	public void start() throws Exception {
+		//只作为客户端时acceptor是null
+		if(acceptor == null){
+			return;
+		}
 		if (serverAddress == null) {
 			serverAddress = new ServerAddress();
 		}

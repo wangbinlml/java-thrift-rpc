@@ -45,7 +45,10 @@ public class ThriftConnector implements IThriftConnector{
 	}
 
 	private void createConnect() throws Exception {
-		
+		//只作为服务端时候connector是null
+		if(connector == null){
+			return ;
+		}
 		Set<String> set= connector.keySet();
 		Iterator<String> iterator= set.iterator();
 		while(iterator.hasNext()) {
