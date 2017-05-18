@@ -1,0 +1,93 @@
+package com.hx.rpc.thrift.impl;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.log4j.Logger;
+
+import com.alibaba.fastjson.JSONObject;
+import com.hx.rpc.gen.Msg;
+import com.hx.rpc.gen.RPCInvokeService;
+import com.hx.rpc.thrift.IThriftConnector;
+import com.hx.rpc.thrift.impl.ThriftConnectorPool.PoolOperationCallBack;
+
+public class ThriftConnector implements IThriftConnector{
+	private static Logger logger = Logger.getLogger(ThriftConnector.class);
+	private ThriftConnectorAddressProvider serverAddressProvider;
+	private Map<String, GenericObjectPool<RPCInvokeService.Client>> map = new HashMap<String, GenericObjectPool<RPCInvokeService.Client>>();
+	JSONObject connectorConfig;
+	private PoolOperationCallBack callback = new PoolOperationCallBack() {
+		public void make(RPCInvokeService.Client client) {
+			logger.info("create pool");
+		}
+
+		public void destroy(RPCInvokeService.Client client) {
+			logger.info("destroy pool");
+		}
+	};
+	@Override
+	public void init(JSONObject config, JSONObject opt) {
+		this.setConnectorConfig(config);
+	}
+
+	@Override
+	public void start() {
+		try {
+			this.createConnect();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void createConnect() throws Exception {
+		
+		Set set= connectorConfig.keySet();
+		Iterator iterator= set.iterator();
+		while(iterator.hasNext()) {
+			String key = (String)iterator.next();
+			JSONObject connectorObj = connectorConfig.getJSONObject(key);
+			String service = connectorObj.getString("service");
+			int maxActive = connectorObj.getInteger("maxPoolSize");
+			int idleTime = connectorObj.getInteger("idleTimeout");
+			String version = connectorObj.getString("version");
+			
+			serverAddressProvider = new ThriftConnectorAddressProvider();
+			serverAddressProvider.setService(service);
+			serverAddressProvider.setVersion(version);
+			
+			ThriftConnectorPool clientPool = new ThriftConnectorPool(serverAddressProvider,
+					callback);
+			GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
+			poolConfig.maxActive = maxActive;
+			poolConfig.minIdle = 0;
+			poolConfig.minEvictableIdleTimeMillis = idleTime;
+			poolConfig.timeBetweenEvictionRunsMillis = idleTime / 2L;
+			GenericObjectPool<RPCInvokeService.Client> pool = new GenericObjectPool<RPCInvokeService.Client>(clientPool, poolConfig);
+			map.put(service, pool);
+		}
+	}
+
+	@Override
+	public Msg invoke(String service, String method, Msg msg) {
+		try {
+			GenericObjectPool<RPCInvokeService.Client> pool = (GenericObjectPool<RPCInvokeService.Client>) map.get(service);
+			RPCInvokeService.Client client = (RPCInvokeService.Client)pool.borrowObject();
+			return client.invoke(service, method, msg);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public JSONObject getConnectorConfig() {
+		return connectorConfig;
+	}
+
+	public void setConnectorConfig(JSONObject connectorConfig) {
+		this.connectorConfig = connectorConfig;
+	}
+	
+}

@@ -11,9 +11,9 @@ public class ApplicationImpl implements IApplication {
 
 	@Override
 	public ApplicationImpl init(JSONObject opt) {
+		rpcServer.init("", opt);
+		rpcClient.init("", opt);
 		System.out.println("ApplicationImpl init.....");
-		rpcClient.init("", new JSONObject());
-		rpcServer.init("", new JSONObject());
 		return this;
 	}
 

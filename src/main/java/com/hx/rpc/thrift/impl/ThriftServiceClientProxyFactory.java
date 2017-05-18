@@ -20,12 +20,18 @@ import com.hx.rpc.thrift.impl.ThriftClientPoolFactory.PoolOperationCallBack;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ThriftServiceClientProxyFactory implements FactoryBean, InitializingBean {
 	private static Logger logger = Logger.getLogger(ThriftServiceClientProxyFactory.class);
+	private ThriftServerAddressProvider serverAddressProvider;
+
+	// 注册服务
+	private String service;
+	// 服务版本号
+	private String version = "1.0.0";
+	
 	private Integer maxActive = 32;// 最大活跃连接数
 
 	// ms,default 3 min,链接空闲时间
 	// -1,关闭空闲检测
 	private Integer idleTime = 180000;
-	private ThriftServerAddressProvider serverAddressProvider;
 
 	private Object proxyClient;
 	private Class<?> objectClass;
@@ -50,12 +56,29 @@ public class ThriftServiceClientProxyFactory implements FactoryBean, Initializin
 		this.idleTime = idleTime;
 	}
 
+	public String getService() {
+		return service;
+	}
+
+	public void setService(String service) {
+		this.service = service;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
 	public void setServerAddressProvider(ThriftServerAddressProvider serverAddressProvider) {
 		this.serverAddressProvider = serverAddressProvider;
 	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void init() {
+		serverAddressProvider.init(service, version);
+	}
+	public void start() throws Exception {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		// 加载Iface接口
 		objectClass = classLoader.loadClass(serverAddressProvider.getService() + "$Iface");
@@ -107,5 +130,11 @@ public class ThriftServiceClientProxyFactory implements FactoryBean, Initializin
 		if (serverAddressProvider != null) {
 			serverAddressProvider.close();
 		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -7,13 +7,44 @@
                 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd  
                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
 	default-lazy-init="false">
-	
-	
-	
+
+	<bean id="thriftZookeeper" class="com.hx.rpc.zk.ZookeeperFactory"
+		destroy-method="close">
+		<property name="singleton" value="true" />
+	</bean>
+
+	<bean id="sericeAddressRegister"
+		class="com.hx.rpc.thrift.impl.ThriftServerAddressRegisterZookeeper"
+		destroy-method="close">
+		<property name="zkClient" ref="thriftZookeeper" />
+	</bean>
+	<bean id="serverAddressProvider"
+		class="com.hx.rpc.thrift.impl.ThriftServerAddressProviderZookeeper"
+		destroy-method="close">
+		<property name="zkClient" ref="thriftZookeeper" />
+	</bean>
+
+	<bean id="serverSerivceImpl" class="com.hx.rpc.gen.impl.RPCInvokeServiceImpl" />
+	<bean id="serverSerivce" class="com.hx.rpc.thrift.impl.ThriftServiceServerFactory"
+		destroy-method="close">
+		<property name="service" ref="serverSerivceImpl" />
+		<property name="thriftServerAddressRegister" ref="sericeAddressRegister" />
+	</bean>
+
+
+	<bean id="clientSerivce" class="com.hx.rpc.thrift.impl.ThriftServiceClientProxyFactory"
+		destroy-method="close">
+		<property name="service" ref="serverSerivceImpl" />
+		<property name="serverAddressProvider" ref="serverAddressProvider" />
+	</bean>
+
 	<bean id="rpcServer" class="com.hx.rpc.core.impl.RpcServerImpl">
 	</bean>
+
 	<bean id="rpcClient" class="com.hx.rpc.core.impl.RpcClientImpl">
+		<property name="cs" ref="clientSerivce" />
 	</bean>
+
 	<bean id="app" class="com.hx.rpc.core.impl.ApplicationImpl">
 		<property name="rpcServer" ref="rpcServer"></property>
 		<property name="rpcClient" ref="rpcClient"></property>

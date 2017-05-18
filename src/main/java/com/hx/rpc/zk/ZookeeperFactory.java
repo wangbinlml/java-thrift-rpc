@@ -84,7 +84,7 @@ public class ZookeeperFactory implements FactoryBean<CuratorFramework> {
 				.canBeReadOnly(true).namespace(namespace)
 				.retryPolicy(new ExponentialBackoffRetry(1000, Integer.MAX_VALUE)).defaultData(null).build();
 	}
-
+	
 	public void close() {
 		if (zkClient != null) {
 			logger.info("zkClient close");

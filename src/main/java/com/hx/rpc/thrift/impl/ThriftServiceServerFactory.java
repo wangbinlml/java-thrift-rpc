@@ -29,8 +29,10 @@ public class ThriftServiceServerFactory implements InitializingBean {
 	// 服务实现类
 	private Object service;// serice实现类
 	// 服务版本号
-	private String version;
+	private String version = "1.0.0";
 	// 解析本机IP
+	private String path;
+	
 	private ThriftServerIpResolve thriftServerIpResolve;
 	// 服务注册
 	private ThriftServerAddressRegister thriftServerAddressRegister;
@@ -61,8 +63,15 @@ public class ThriftServiceServerFactory implements InitializingBean {
 		this.thriftServerAddressRegister = thriftServerAddressRegister;
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public void start() throws Exception {
 		if (thriftServerIpResolve == null) {
 			thriftServerIpResolve = new ThriftServerIpLocalNetworkResolve();
 		}
@@ -109,7 +118,7 @@ public class ThriftServiceServerFactory implements InitializingBean {
 		serverThread.start();
 		// 注册服务
 		if (thriftServerAddressRegister != null) {
-			thriftServerAddressRegister.register(serviceName, version, hostname);
+			thriftServerAddressRegister.register(path, version, hostname);
 		}
 
 	}
@@ -146,5 +155,11 @@ public class ThriftServiceServerFactory implements InitializingBean {
 	public void close() {
 		logger.info("启动停止");
 		serverThread.stopServer();
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 }

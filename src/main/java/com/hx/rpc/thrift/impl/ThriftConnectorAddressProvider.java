@@ -13,25 +13,21 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
-import org.apache.curator.framework.recipes.cache.PathChildrenCache.StartMode;
-import org.apache.log4j.Logger;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
-import org.springframework.beans.factory.InitializingBean;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache.StartMode;
+import org.apache.log4j.Logger;
 
-import com.hx.rpc.thrift.ThriftServerAddressProvider;
+import com.hx.rpc.thrift.IThriftConnectorAddressProvider;
 
-/**
- * 使用zookeeper作为"config"中心,使用apache-curator方法库来简化zookeeper开发
- */
-public class ThriftServerAddressProviderZookeeper implements ThriftServerAddressProvider, InitializingBean {
+public class ThriftConnectorAddressProvider implements IThriftConnectorAddressProvider {
 
-	private static Logger logger = Logger.getLogger(ThriftServiceClientProxyFactory.class);
+	private static Logger logger = Logger.getLogger(ThriftConnectorAddressProvider.class);
 
 	// 注册服务
-	private String service;
+	public String service;
 	// 服务版本号
-	private String version = "1.0.0";
+	public String version = "1.0.0";
 
 	private PathChildrenCache cachedPath;
 
@@ -58,10 +54,10 @@ public class ThriftServerAddressProviderZookeeper implements ThriftServerAddress
 		this.version = version;
 	}
 
-	public ThriftServerAddressProviderZookeeper() {
+	public ThriftConnectorAddressProvider() {
 	}
 
-	public ThriftServerAddressProviderZookeeper(CuratorFramework zkClient) {
+	public ThriftConnectorAddressProvider(CuratorFramework zkClient) {
 		this.zkClient = zkClient;
 	}
 
@@ -201,10 +197,8 @@ public class ThriftServerAddressProviderZookeeper implements ThriftServerAddress
 		return service;
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
-
+	public String getVersion() {
+		return version;
 	}
 
 }
