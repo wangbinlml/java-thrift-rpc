@@ -4,10 +4,8 @@ import java.net.InetSocketAddress;
 
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.thrift.TServiceClient;
-import org.apache.thrift.TServiceClientFactory;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
@@ -51,8 +49,7 @@ public class ThriftConnectorPool extends BasePoolableObjectFactory<RPCInvokeServ
 	@Override
 	public RPCInvokeService.Client makeObject() throws Exception {
 		InetSocketAddress address = serverAddressProvider.selector();
-		TSocket tsocket = new TSocket(address.getHostName(), address.getPort());
-		TTransport transport = new TFramedTransport(tsocket);
+		TTransport transport = new TSocket(address.getHostName(), address.getPort());
 		TProtocol protocol = new TBinaryProtocol(transport);
 		RPCInvokeService.Client client = new RPCInvokeService.Client(protocol);
 		transport.open();

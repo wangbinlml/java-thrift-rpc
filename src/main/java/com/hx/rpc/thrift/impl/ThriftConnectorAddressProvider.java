@@ -82,7 +82,7 @@ public class ThriftConnectorAddressProvider implements IThriftConnectorAddressPr
 	}
 
 	private String getServicePath() {
-		return "/" + service + "/" + version;
+		return service + "/" + version;
 	}
 
 	private void buildPathChildrenCache(final CuratorFramework client, String path, Boolean cacheData)

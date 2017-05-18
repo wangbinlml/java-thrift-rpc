@@ -13,36 +13,33 @@
 		<property name="singleton" value="true" />
 	</bean>
 
-	<bean id="sericeAddressRegister"
-		class="com.hx.rpc.thrift.impl.ThriftServerAddressRegisterZookeeper"
-		destroy-method="close">
-		<property name="zkClient" ref="thriftZookeeper" />
-	</bean>
-	<bean id="serverAddressProvider"
-		class="com.hx.rpc.thrift.impl.ThriftServerAddressProviderZookeeper"
+	<bean id="register" class="com.hx.rpc.thrift.impl.ThriftAcceptorRegister"
 		destroy-method="close">
 		<property name="zkClient" ref="thriftZookeeper" />
 	</bean>
 
 	<bean id="serverSerivceImpl" class="com.hx.rpc.gen.impl.RPCInvokeServiceImpl" />
-	<bean id="serverSerivce" class="com.hx.rpc.thrift.impl.ThriftServiceServerFactory"
+	<bean id="serverAddressProvider" class="com.hx.rpc.thrift.impl.ThriftConnectorAddressProvider"
 		destroy-method="close">
-		<property name="service" ref="serverSerivceImpl" />
-		<property name="thriftServerAddressRegister" ref="sericeAddressRegister" />
+		<property name="zkClient" ref="thriftZookeeper" />
 	</bean>
 
-
-	<bean id="clientSerivce" class="com.hx.rpc.thrift.impl.ThriftServiceClientProxyFactory"
-		destroy-method="close">
-		<property name="service" ref="serverSerivceImpl" />
+	<bean id="connector" class="com.hx.rpc.thrift.impl.ThriftConnector">
 		<property name="serverAddressProvider" ref="serverAddressProvider" />
+	</bean>
+	<bean id="serverAddress" class="com.hx.rpc.thrift.impl.ServerAddress" />
+	<bean id="acceptor" class="com.hx.rpc.thrift.impl.ThriftAcceptor"
+		destroy-method="close">
+		<property name="register" ref="register" />
+		<property name="serverAddress" ref="serverAddress" />
 	</bean>
 
 	<bean id="rpcServer" class="com.hx.rpc.core.impl.RpcServerImpl">
+		<property name="acceptor" ref="acceptor" />
 	</bean>
 
 	<bean id="rpcClient" class="com.hx.rpc.core.impl.RpcClientImpl">
-		<property name="cs" ref="clientSerivce" />
+		<property name="connector" ref="connector" />
 	</bean>
 
 	<bean id="app" class="com.hx.rpc.core.impl.ApplicationImpl">

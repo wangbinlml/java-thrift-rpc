@@ -37,7 +37,8 @@ public class ThriftAcceptorRegister implements IThriftAcceptorRegister {
 		// 临时节点
 		try {
 			zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL)
-					.forPath("/" + service + "/" + version + "/" + address);
+					.forPath(service + "/" + version + "/" + address);
+			logger.info("regist path " + service + "/" + version + "/" + address);
 		} catch (UnsupportedEncodingException e) {
 			logger.error("register service address to zookeeper exception:{}", e);
 			logger.error("register service address to zookeeper exception: address UnsupportedEncodingException", e);

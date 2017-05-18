@@ -11,15 +11,19 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.hx.rpc.core.utils.PropertiesUtils;
 import com.hx.rpc.gen.RPCInvokeService;
 import com.hx.rpc.gen.impl.RPCInvokeServiceImpl;
 import com.hx.rpc.thrift.IThriftAcceptor;
 public class ThriftAcceptor implements IThriftAcceptor{
 	private static Logger logger = Logger.getLogger(ThriftAcceptor.class);
+	private static PropertiesUtils properties = new PropertiesUtils();
+	JSONObject acceptor = JSONObject.parseObject(properties.getPropertyValue("acceptor"));
+	
 	String host;
 	int port;
 	String name;
-	String zkPath;
+	String service;
 	int weight = 1;
 	String version = "1.0.0";
 
@@ -33,16 +37,16 @@ public class ThriftAcceptor implements IThriftAcceptor{
 	}
 
 	@Override
-	public void init(JSONObject config, JSONObject opt) {
-		this.setHost(config.getString("host"));
-		this.setPort(config.getInteger("port"));
-		this.setName(config.getString("name"));
-		this.setZkPath(config.getString("zkPath"));
-		if(config.containsKey("weight")){
-			this.setWeight(Integer.valueOf(config.getString("weight")));
+	public void init(JSONObject opt) {
+		this.setHost(acceptor.getString("host"));
+		this.setPort(acceptor.getInteger("port"));
+		this.setName(acceptor.getString("name"));
+		this.setService(acceptor.getString("service"));
+		if(acceptor.containsKey("weight")){
+			this.setWeight(Integer.valueOf(acceptor.getString("weight")));
 		}
-		if(config.containsKey("version")) {
-			this.setVersion(config.getString("version"));
+		if(acceptor.containsKey("version")) {
+			this.setVersion(acceptor.getString("version"));
 		}
 	}
 
@@ -64,7 +68,7 @@ public class ThriftAcceptor implements IThriftAcceptor{
 		serverThread.start();
 		// 注册服务
 		if (register != null) {
-			register.register(zkPath, version, hostname);
+			register.register(service, version, hostname);
 		}
 	}
 	class ServerThread extends Thread {
@@ -83,7 +87,7 @@ public class ThriftAcceptor implements IThriftAcceptor{
 		public void run() {
 			try {
 				// 启动服务
-				logger.info("启动服务");
+				logger.info("run acceptor server");
 				server.serve();
 			} catch (Exception e) {
                 e.printStackTrace();
@@ -125,12 +129,12 @@ public class ThriftAcceptor implements IThriftAcceptor{
 		this.name = name;
 	}
 
-	public String getZkPath() {
-		return zkPath;
+	public String getService() {
+		return service;
 	}
 
-	public void setZkPath(String zkPath) {
-		this.zkPath = zkPath;
+	public void setService(String service) {
+		this.service = service;
 	}
 
 	public int getWeight() {

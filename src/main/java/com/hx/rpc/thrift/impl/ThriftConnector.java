@@ -9,6 +9,7 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
 import com.alibaba.fastjson.JSONObject;
+import com.hx.rpc.core.utils.PropertiesUtils;
 import com.hx.rpc.gen.Msg;
 import com.hx.rpc.gen.RPCInvokeService;
 import com.hx.rpc.thrift.IThriftConnector;
@@ -16,9 +17,11 @@ import com.hx.rpc.thrift.impl.ThriftConnectorPool.PoolOperationCallBack;
 
 public class ThriftConnector implements IThriftConnector{
 	private static Logger logger = Logger.getLogger(ThriftConnector.class);
+	private static PropertiesUtils properties = new PropertiesUtils();
+	JSONObject connector = JSONObject.parseObject(properties.getPropertyValue("connector"));
 	private ThriftConnectorAddressProvider serverAddressProvider;
 	private Map<String, GenericObjectPool<RPCInvokeService.Client>> map = new HashMap<String, GenericObjectPool<RPCInvokeService.Client>>();
-	JSONObject connectorConfig;
+
 	private PoolOperationCallBack callback = new PoolOperationCallBack() {
 		public void make(RPCInvokeService.Client client) {
 			logger.info("create pool");
@@ -29,8 +32,7 @@ public class ThriftConnector implements IThriftConnector{
 		}
 	};
 	@Override
-	public void init(JSONObject config, JSONObject opt) {
-		this.setConnectorConfig(config);
+	public void init(JSONObject opt) {
 	}
 
 	@Override
@@ -44,20 +46,17 @@ public class ThriftConnector implements IThriftConnector{
 
 	private void createConnect() throws Exception {
 		
-		Set set= connectorConfig.keySet();
-		Iterator iterator= set.iterator();
+		Set<String> set= connector.keySet();
+		Iterator<String> iterator= set.iterator();
 		while(iterator.hasNext()) {
 			String key = (String)iterator.next();
-			JSONObject connectorObj = connectorConfig.getJSONObject(key);
+			JSONObject connectorObj = connector.getJSONObject(key);
 			String service = connectorObj.getString("service");
 			int maxActive = connectorObj.getInteger("maxPoolSize");
 			int idleTime = connectorObj.getInteger("idleTimeout");
 			String version = connectorObj.getString("version");
 			
-			serverAddressProvider = new ThriftConnectorAddressProvider();
-			serverAddressProvider.setService(service);
-			serverAddressProvider.setVersion(version);
-			
+			serverAddressProvider.init(service, version);
 			ThriftConnectorPool clientPool = new ThriftConnectorPool(serverAddressProvider,
 					callback);
 			GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
@@ -71,8 +70,10 @@ public class ThriftConnector implements IThriftConnector{
 	}
 
 	@Override
-	public Msg invoke(String service, String method, Msg msg) {
+	public Msg invoke(String service_name, String method, Msg msg) {
 		try {
+			JSONObject connectorObj = connector.getJSONObject(service_name);
+			String service = connectorObj.getString("service");
 			GenericObjectPool<RPCInvokeService.Client> pool = (GenericObjectPool<RPCInvokeService.Client>) map.get(service);
 			RPCInvokeService.Client client = (RPCInvokeService.Client)pool.borrowObject();
 			return client.invoke(service, method, msg);
@@ -82,12 +83,12 @@ public class ThriftConnector implements IThriftConnector{
 		return null;
 	}
 
-	public JSONObject getConnectorConfig() {
-		return connectorConfig;
+	public ThriftConnectorAddressProvider getServerAddressProvider() {
+		return serverAddressProvider;
 	}
 
-	public void setConnectorConfig(JSONObject connectorConfig) {
-		this.connectorConfig = connectorConfig;
+	public void setServerAddressProvider(ThriftConnectorAddressProvider serverAddressProvider) {
+		this.serverAddressProvider = serverAddressProvider;
 	}
 	
 }
