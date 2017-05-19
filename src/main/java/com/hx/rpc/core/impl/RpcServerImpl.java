@@ -2,7 +2,7 @@ package com.hx.rpc.core.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hx.rpc.core.IRpcServer;
-import com.hx.rpc.thrift.IThriftAcceptor;
+import com.hx.rpc.core.thrift.IThriftAcceptor;
 
 public class RpcServerImpl implements IRpcServer {
 	private IThriftAcceptor acceptor;

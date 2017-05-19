@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift;
+package com.hx.rpc.core.thrift;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hx.rpc.gen.Msg;

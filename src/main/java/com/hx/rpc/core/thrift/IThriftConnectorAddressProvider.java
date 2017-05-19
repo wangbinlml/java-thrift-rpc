@@ -1,13 +1,9 @@
-package com.hx.rpc.thrift;
+package com.hx.rpc.core.thrift;
 
 import java.net.InetSocketAddress;
 import java.util.List;
 
-/**
- * thrift server-service地址提供者,以便构建客户端连接池
- */
-public interface ThriftServerAddressProvider {
-
+public interface IThriftConnectorAddressProvider {
 	// 获取服务名称
 	String getService();
 
@@ -24,6 +20,8 @@ public interface ThriftServerAddressProvider {
 	 * @return
 	 */
 	InetSocketAddress selector();
+
 	void init(String service, String version);
+
 	void close();
 }

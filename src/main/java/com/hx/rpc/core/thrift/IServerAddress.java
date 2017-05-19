@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift;
+package com.hx.rpc.core.thrift;
 
 public interface IServerAddress {
 	public String getServerIP();

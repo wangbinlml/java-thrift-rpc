@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift.impl;
+package com.hx.rpc.core.thrift.impl;
 
 import java.net.InetSocketAddress;
 
@@ -9,8 +9,8 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
+import com.hx.rpc.core.thrift.IThriftConnectorAddressProvider;
 import com.hx.rpc.gen.RPCInvokeService;
-import com.hx.rpc.thrift.IThriftConnectorAddressProvider;
 
 public class ThriftConnectorPool extends BasePoolableObjectFactory<RPCInvokeService.Client>{
 	private final IThriftConnectorAddressProvider serverAddressProvider;

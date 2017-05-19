@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift.impl;
+package com.hx.rpc.core.thrift.impl;
 
 import org.apache.log4j.Logger;
 import org.apache.thrift.TProcessor;
@@ -11,9 +11,9 @@ import org.apache.thrift.transport.TServerSocket;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.hx.rpc.core.thrift.IThriftAcceptor;
 import com.hx.rpc.core.utils.PropertiesUtils;
 import com.hx.rpc.gen.RPCInvokeService;
-import com.hx.rpc.thrift.IThriftAcceptor;
 public class ThriftAcceptor implements IThriftAcceptor{
 	private static Logger logger = Logger.getLogger(ThriftAcceptor.class);
 	private static PropertiesUtils properties = new PropertiesUtils();

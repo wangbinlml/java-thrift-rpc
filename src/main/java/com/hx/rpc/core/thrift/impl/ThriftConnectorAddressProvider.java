@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift.impl;
+package com.hx.rpc.core.thrift.impl;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache.StartMode;
 import org.apache.log4j.Logger;
 
-import com.hx.rpc.thrift.IThriftConnectorAddressProvider;
+import com.hx.rpc.core.thrift.IThriftConnectorAddressProvider;
 
 public class ThriftConnectorAddressProvider implements IThriftConnectorAddressProvider {
 

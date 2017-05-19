@@ -8,27 +8,27 @@
                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
 	default-lazy-init="false">
 
-	<bean id="thriftZookeeper" class="com.hx.rpc.zk.ZookeeperFactory"
+	<bean id="thriftZookeeper" class="com.hx.rpc.core.zk.ZookeeperFactory"
 		init-method="init" destroy-method="close">
 		<property name="singleton" value="true" />
 	</bean>
 
-	<bean id="register" class="com.hx.rpc.thrift.impl.ThriftAcceptorRegister"
+	<bean id="register" class="com.hx.rpc.core.thrift.impl.ThriftAcceptorRegister"
 		destroy-method="close">
 		<property name="zkClient" ref="thriftZookeeper" />
 	</bean>
 
 	<bean id="serverSerivce" class="com.hx.rpc.gen.impl.RPCInvokeServiceImpl" />
-	<bean id="serverAddressProvider" class="com.hx.rpc.thrift.impl.ThriftConnectorAddressProvider"
+	<bean id="serverAddressProvider" class="com.hx.rpc.core.thrift.impl.ThriftConnectorAddressProvider"
 		destroy-method="close">
 		<property name="zkClient" ref="thriftZookeeper" />
 	</bean>
 
-	<bean id="connector" class="com.hx.rpc.thrift.impl.ThriftConnector">
+	<bean id="connector" class="com.hx.rpc.core.thrift.impl.ThriftConnector">
 		<property name="serverAddressProvider" ref="serverAddressProvider" />
 	</bean>
-	<bean id="serverAddress" class="com.hx.rpc.thrift.impl.ServerAddress" />
-	<bean id="acceptor" class="com.hx.rpc.thrift.impl.ThriftAcceptor"
+	<bean id="serverAddress" class="com.hx.rpc.core.thrift.impl.ServerAddress" />
+	<bean id="acceptor" class="com.hx.rpc.core.thrift.impl.ThriftAcceptor"
 		destroy-method="close">
 		<property name="register" ref="register" />
 		<property name="serverAddress" ref="serverAddress" />

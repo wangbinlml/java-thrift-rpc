@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift.impl;
+package com.hx.rpc.core.thrift.impl;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -8,25 +8,18 @@ import java.util.Enumeration;
 
 import org.apache.log4j.Logger;
 
-import com.hx.rpc.thrift.ThriftServerIpResolve;
+import com.hx.rpc.core.thrift.IServerAddress;
 
-/**
- * 解析网卡Ip
- * 
- */
-public class ThriftServerIpLocalNetworkResolve implements ThriftServerIpResolve {
-
-	private static Logger logger = Logger.getLogger(ThriftServerIpLocalNetworkResolve.class);
-
+public class ServerAddress implements IServerAddress {
+	private static Logger logger = Logger.getLogger(ServerAddress.class);
 	// 缓存
 	private String serverIp;
-
+	
 	public void setServerIp(String serverIp) {
 		this.serverIp = serverIp;
 	}
-
 	@Override
-	public String getServerIp() {
+	public String getServerIP() {
 		if (serverIp != null) {
 			return serverIp;
 		}
@@ -54,7 +47,6 @@ public class ThriftServerIpLocalNetworkResolve implements ThriftServerIpResolve 
 		}
 		return serverIp;
 	}
-
 	@Override
 	public void reset() {
 		serverIp = null;

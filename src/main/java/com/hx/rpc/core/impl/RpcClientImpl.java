@@ -2,8 +2,8 @@ package com.hx.rpc.core.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hx.rpc.core.IRpcClient;
+import com.hx.rpc.core.thrift.IThriftConnector;
 import com.hx.rpc.gen.Msg;
-import com.hx.rpc.thrift.IThriftConnector;
 
 public class RpcClientImpl  implements IRpcClient {
 	private IThriftConnector connector;

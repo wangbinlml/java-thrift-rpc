@@ -1,4 +1,4 @@
-package com.hx.rpc.zk;
+package com.hx.rpc.core.zk;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;

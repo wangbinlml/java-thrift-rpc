@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift.impl;
+package com.hx.rpc.core.thrift.impl;
 
 import java.io.UnsupportedEncodingException;
 
@@ -8,21 +8,17 @@ import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.springframework.util.StringUtils;
 
-import com.hx.rpc.thrift.ThriftServerAddressRegister;
+import com.hx.rpc.core.thrift.IThriftAcceptorRegister;
 
-/**
- * 注册服务列表到Zookeeper
- */
-public class ThriftServerAddressRegisterZookeeper implements ThriftServerAddressRegister {
-
-	private static Logger logger = Logger.getLogger(ThriftServiceClientProxyFactory.class);
+public class ThriftAcceptorRegister implements IThriftAcceptorRegister {
+	private static Logger logger = Logger.getLogger(ThriftAcceptorRegister.class);
 
 	private CuratorFramework zkClient;
 
-	public ThriftServerAddressRegisterZookeeper() {
+	public ThriftAcceptorRegister() {
 	}
 
-	public ThriftServerAddressRegisterZookeeper(CuratorFramework zkClient) {
+	public ThriftAcceptorRegister(CuratorFramework zkClient) {
 		this.zkClient = zkClient;
 	}
 
@@ -41,7 +37,8 @@ public class ThriftServerAddressRegisterZookeeper implements ThriftServerAddress
 		// 临时节点
 		try {
 			zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL)
-					.forPath("/" + service + "/" + version + "/" + address);
+					.forPath(service + "/" + version + "/" + address);
+			logger.info("regist path " + service + "/" + version + "/" + address);
 		} catch (UnsupportedEncodingException e) {
 			logger.error("register service address to zookeeper exception:{}", e);
 			logger.error("register service address to zookeeper exception: address UnsupportedEncodingException", e);
@@ -51,6 +48,7 @@ public class ThriftServerAddressRegisterZookeeper implements ThriftServerAddress
 			logger.error("register service address to zookeeper exception:{}", e);
 			e.printStackTrace();
 		}
+
 	}
 
 	public void close() {

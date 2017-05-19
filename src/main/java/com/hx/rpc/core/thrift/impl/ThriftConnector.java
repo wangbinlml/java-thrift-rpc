@@ -1,4 +1,4 @@
-package com.hx.rpc.thrift.impl;
+package com.hx.rpc.core.thrift.impl;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,11 +9,11 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
 import com.alibaba.fastjson.JSONObject;
+import com.hx.rpc.core.thrift.IThriftConnector;
+import com.hx.rpc.core.thrift.impl.ThriftConnectorPool.PoolOperationCallBack;
 import com.hx.rpc.core.utils.PropertiesUtils;
 import com.hx.rpc.gen.Msg;
 import com.hx.rpc.gen.RPCInvokeService;
-import com.hx.rpc.thrift.IThriftConnector;
-import com.hx.rpc.thrift.impl.ThriftConnectorPool.PoolOperationCallBack;
 
 public class ThriftConnector implements IThriftConnector{
 	private static Logger logger = Logger.getLogger(ThriftConnector.class);
