@@ -1,7 +1,7 @@
 package com.hx.rpc.core;
 
-import com.alibaba.fastjson.JSONObject;
+import com.hx.rpc.gen.Msg;
 
 public interface IBusinessService {
-	public void doBusiness(String messageName, JSONObject reqMsg);
+	public Msg doBusiness(String messageName, Msg reqMsg);
 }

@@ -79,7 +79,7 @@ public class ThriftConnector implements IThriftConnector{
 			String service = connectorObj.getString("service");
 			GenericObjectPool<RPCInvokeService.Client> pool = (GenericObjectPool<RPCInvokeService.Client>) map.get(service);
 			RPCInvokeService.Client client = (RPCInvokeService.Client)pool.borrowObject();
-			return client.invoke(service, method, msg);
+			return client.invoke(service_name, method, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

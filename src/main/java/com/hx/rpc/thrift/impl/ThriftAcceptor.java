@@ -5,27 +5,27 @@ import org.apache.thrift.TProcessor;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TBinaryProtocol.Factory;
 import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.server.TThreadPoolServer.Args;
 import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.server.TThreadPoolServer;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hx.rpc.core.utils.PropertiesUtils;
 import com.hx.rpc.gen.RPCInvokeService;
-import com.hx.rpc.gen.impl.RPCInvokeServiceImpl;
 import com.hx.rpc.thrift.IThriftAcceptor;
 public class ThriftAcceptor implements IThriftAcceptor{
 	private static Logger logger = Logger.getLogger(ThriftAcceptor.class);
 	private static PropertiesUtils properties = new PropertiesUtils();
-	JSONObject acceptor = JSONObject.parseObject(properties.getPropertyValue("acceptor"));
+	private RPCInvokeService.Iface serverSerivce;
+	private JSONObject acceptor = JSONObject.parseObject(properties.getPropertyValue("acceptor"));
 	
-	String host;
-	int port;
-	String name;
-	String service;
-	int weight = 1;
-	String version = "1.0.0";
+	private String host;
+	private int port;
+	private String name;
+	private String service;
+	private int weight = 1;
+	private String version = "1.0.0";
 
 	private ServerThread serverThread;
 	private ThriftAcceptorRegister register;
@@ -70,7 +70,7 @@ public class ThriftAcceptor implements IThriftAcceptor{
 
 		String hostname = serverIP + ":" + port + ":" + weight;
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		RPCInvokeService.Processor processor = new RPCInvokeService.Processor(new RPCInvokeServiceImpl());
+		RPCInvokeService.Processor processor = new RPCInvokeService.Processor(serverSerivce);
 		// 需要单独的线程,因为serve方法是阻塞的.
 		serverThread = new ServerThread(processor, port);
 		serverThread.start();
@@ -175,6 +175,14 @@ public class ThriftAcceptor implements IThriftAcceptor{
 
 	public void setServerAddress(ServerAddress serverAddress) {
 		this.serverAddress = serverAddress;
+	}
+
+	public RPCInvokeService.Iface getServerSerivce() {
+		return serverSerivce;
+	}
+
+	public void setServerSerivce(RPCInvokeService.Iface serverSerivce) {
+		this.serverSerivce = serverSerivce;
 	}
 	
 

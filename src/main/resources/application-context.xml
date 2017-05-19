@@ -9,7 +9,7 @@
 	default-lazy-init="false">
 
 	<bean id="thriftZookeeper" class="com.hx.rpc.zk.ZookeeperFactory"
-		destroy-method="close">
+		init-method="init" destroy-method="close">
 		<property name="singleton" value="true" />
 	</bean>
 
@@ -18,7 +18,7 @@
 		<property name="zkClient" ref="thriftZookeeper" />
 	</bean>
 
-	<bean id="serverSerivceImpl" class="com.hx.rpc.gen.impl.RPCInvokeServiceImpl" />
+	<bean id="serverSerivce" class="com.hx.rpc.gen.impl.RPCInvokeServiceImpl" />
 	<bean id="serverAddressProvider" class="com.hx.rpc.thrift.impl.ThriftConnectorAddressProvider"
 		destroy-method="close">
 		<property name="zkClient" ref="thriftZookeeper" />
@@ -32,6 +32,7 @@
 		destroy-method="close">
 		<property name="register" ref="register" />
 		<property name="serverAddress" ref="serverAddress" />
+		<property name="serverSerivce" ref="serverSerivce" />
 	</bean>
 
 	<bean id="rpcServer" class="com.hx.rpc.core.impl.RpcServerImpl">
@@ -47,6 +48,10 @@
 		<property name="rpcClient" ref="rpcClient"></property>
 	</bean>
 	<bean id="rpc" class="com.hx.rpc.core.impl.RpcImpl">
+		<property name="app" ref="app"></property>
+	</bean>
+
+	<bean id="biz_service" class="com.hx.rpc.demo.HelloImpl">
 		<property name="app" ref="app"></property>
 	</bean>
 </beans>  

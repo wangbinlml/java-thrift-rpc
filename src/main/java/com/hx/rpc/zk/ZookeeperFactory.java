@@ -26,10 +26,28 @@ public class ZookeeperFactory implements FactoryBean<CuratorFramework> {
 	// 全局path前缀,常用来区分不同的应用
 	private String namespace;
 
-	private final static String ROOT = "rpc";
+	private final static String ROOT = "";
 
 	private CuratorFramework zkClient;
-
+	
+	public void init(){
+		if (StringUtils.isEmpty(namespace)) {
+			namespace = ROOT;
+		} else {
+			namespace = ROOT + "/" + namespace;
+		}
+		this.setNamespace(namespace);
+		zkHosts = properties.getPropertyValue("zkHosts");
+		this.setZkHosts(zkHosts);
+		if (!StringUtils.isEmpty(properties.getPropertyValue("sessionTimeout"))) {
+			sessionTimeout = Integer.valueOf(properties.getPropertyValue("sessionTimeout"));
+			this.setSessionTimeout(sessionTimeout);
+		}
+		if (!StringUtils.isEmpty(properties.getPropertyValue("connectionTimeout"))) {
+			connectionTimeout = Integer.valueOf(properties.getPropertyValue("connectionTimeout"));
+			this.setConnectionTimeout(connectionTimeout);
+		}
+	}
 	public void setSingleton(boolean singleton) {
 		this.singleton = singleton;
 	}
@@ -62,18 +80,6 @@ public class ZookeeperFactory implements FactoryBean<CuratorFramework> {
 	}
 
 	public CuratorFramework create() throws Exception {
-		if (StringUtils.isEmpty(namespace)) {
-			namespace = ROOT;
-		} else {
-			namespace = ROOT + "/" + namespace;
-		}
-		zkHosts = properties.getPropertyValue("zkHosts");
-		if (!StringUtils.isEmpty(properties.getPropertyValue("sessionTimeout"))) {
-			sessionTimeout = Integer.valueOf(properties.getPropertyValue("sessionTimeout"));
-		}
-		if (!StringUtils.isEmpty(properties.getPropertyValue("connectionTimeout"))) {
-			connectionTimeout = Integer.valueOf(properties.getPropertyValue("connectionTimeout"));
-		}
 		return create(zkHosts, sessionTimeout, connectionTimeout, namespace);
 	}
 
@@ -91,4 +97,29 @@ public class ZookeeperFactory implements FactoryBean<CuratorFramework> {
 			zkClient.close();
 		}
 	}
+	public String getZkHosts() {
+		return zkHosts;
+	}
+	public void setZkHosts(String zkHosts) {
+		this.zkHosts = zkHosts;
+	}
+	public int getSessionTimeout() {
+		return sessionTimeout;
+	}
+	public void setSessionTimeout(int sessionTimeout) {
+		this.sessionTimeout = sessionTimeout;
+	}
+	public int getConnectionTimeout() {
+		return connectionTimeout;
+	}
+	public void setConnectionTimeout(int connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
+	public String getNamespace() {
+		return namespace;
+	}
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
+	
 }
