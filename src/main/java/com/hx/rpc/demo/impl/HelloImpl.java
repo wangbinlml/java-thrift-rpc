@@ -1,6 +1,7 @@
 package com.hx.rpc.demo.impl;
 
 import com.hx.rpc.core.IApplication;
+import com.hx.rpc.core.IRpcClient;
 import com.hx.rpc.demo.IHelloBiz;
 import com.hx.rpc.gen.Msg;
 
@@ -20,7 +21,10 @@ public class HelloImpl implements IHelloBiz {
 		String body = reqMsg.getBody();
 		reqMsg.setBody(body + " world");
 		System.out.println("sayHello: " + body + " world");
-		System.out.println("rpcClient: " + app.getRpcClient());
+		//调用nodejs common_service服务
+		/*IRpcClient client = app.getRpcClient();
+		Msg msg = client.invoke("common_service", "sendSMS", reqMsg);
+		System.out.println("common_service rpcClient: " +msg.getBody());*/
 	}
 
 }

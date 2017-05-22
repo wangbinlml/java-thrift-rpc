@@ -20,12 +20,12 @@
 
 	<bean id="serverSerivce" class="com.hx.rpc.gen.impl.RPCInvokeServiceImpl" />
 	<bean id="serverAddressProvider" class="com.hx.rpc.core.thrift.impl.ThriftConnectorAddressProvider"
-		destroy-method="close">
+		destroy-method="close" scope="prototype">
 		<property name="zkClient" ref="thriftZookeeper" />
 	</bean>
 
 	<bean id="connector" class="com.hx.rpc.core.thrift.impl.ThriftConnector">
-		<property name="serverAddressProvider" ref="serverAddressProvider" />
+		<!-- <property name="serverAddressProvider" ref="serverAddressProvider" /> -->
 	</bean>
 	<bean id="serverAddress" class="com.hx.rpc.core.thrift.impl.ServerAddress" />
 	<bean id="acceptor" class="com.hx.rpc.core.thrift.impl.ThriftAcceptor"

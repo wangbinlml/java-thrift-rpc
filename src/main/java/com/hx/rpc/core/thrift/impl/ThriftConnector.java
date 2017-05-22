@@ -7,6 +7,9 @@ import java.util.Set;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hx.rpc.core.thrift.IThriftConnector;
@@ -15,11 +18,12 @@ import com.hx.rpc.core.utils.PropertiesUtils;
 import com.hx.rpc.gen.Msg;
 import com.hx.rpc.gen.RPCInvokeService;
 
-public class ThriftConnector implements IThriftConnector{
+public class ThriftConnector implements BeanFactoryAware,IThriftConnector{
 	private static Logger logger = Logger.getLogger(ThriftConnector.class);
 	private static PropertiesUtils properties = new PropertiesUtils();
 	JSONObject connector = JSONObject.parseObject(properties.getPropertyValue("connector"));
 	private ThriftConnectorAddressProvider serverAddressProvider;
+    private BeanFactory factory;  
 	private Map<String, GenericObjectPool<RPCInvokeService.Client>> map = new HashMap<String, GenericObjectPool<RPCInvokeService.Client>>();
 
 	private PoolOperationCallBack callback = new PoolOperationCallBack() {
@@ -59,6 +63,8 @@ public class ThriftConnector implements IThriftConnector{
 			int idleTime = connectorObj.getInteger("idleTimeout");
 			String version = connectorObj.getString("version");
 			
+			//TODO 为什么不能注入，注入后变成单实例（http://blog.csdn.net/gladyoucame/article/details/8245036）
+			serverAddressProvider = (ThriftConnectorAddressProvider)factory.getBean("serverAddressProvider");
 			serverAddressProvider.init(service, version);
 			ThriftConnectorPool clientPool = new ThriftConnectorPool(serverAddressProvider,
 					callback);
@@ -90,8 +96,13 @@ public class ThriftConnector implements IThriftConnector{
 		return serverAddressProvider;
 	}
 
-	public void setServerAddressProvider(ThriftConnectorAddressProvider serverAddressProvider) {
+	/*public void setServerAddressProvider(ThriftConnectorAddressProvider serverAddressProvider) {
 		this.serverAddressProvider = serverAddressProvider;
+	}*/
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		factory = beanFactory;
 	}
 	
 }
