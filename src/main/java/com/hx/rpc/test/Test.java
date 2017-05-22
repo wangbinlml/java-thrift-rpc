@@ -26,7 +26,7 @@ public class Test {
         msg.setBody("hello");
         System.out.println("Client calls ....."); 
 		Msg msg2;
-		msg2 = client.invoke("biz_service", "sendMsg", msg);
+		msg2 = client.invoke("biz_service", "sayHello", msg);
         System.out.println(msg2.getBody());
 	}
 }

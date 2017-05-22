@@ -50,8 +50,11 @@
 	<bean id="rpc" class="com.hx.rpc.core.impl.RpcImpl">
 		<property name="app" ref="app"></property>
 	</bean>
-
-	<bean id="biz_service" class="com.hx.rpc.demo.HelloImpl">
+	
+	<bean id="helloBiz" class="com.hx.rpc.demo.impl.HelloImpl">
 		<property name="app" ref="app"></property>
+	</bean>
+	<bean id="biz_service" class="com.hx.rpc.demo.dispatcher.HelloDispacher">
+		<property name="helloBiz" ref="helloBiz"></property>
 	</bean>
 </beans>  
