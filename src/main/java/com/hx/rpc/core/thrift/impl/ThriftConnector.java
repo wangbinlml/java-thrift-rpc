@@ -85,7 +85,9 @@ public class ThriftConnector implements BeanFactoryAware,IThriftConnector{
 			String service = connectorObj.getString("service");
 			GenericObjectPool<RPCInvokeService.Client> pool = (GenericObjectPool<RPCInvokeService.Client>) map.get(service);
 			RPCInvokeService.Client client = (RPCInvokeService.Client)pool.borrowObject();
-			return client.invoke(service_name, method, msg);
+			Msg msg2 = client.invoke(service_name, method, msg);
+			pool.returnObject(client);
+			return msg2;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
